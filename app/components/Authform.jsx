@@ -58,7 +58,7 @@ export default function AuthForm() {
         >
           {isLogin ? "Don't have an account? Sign up" : 'Already have an account? Log in'}
         </p>
-        {message && <p className="text-red-600">{message}</p>}
+        {message && <p className="text-gray-600">{message}</p>}
       </form>
     </div>
   )

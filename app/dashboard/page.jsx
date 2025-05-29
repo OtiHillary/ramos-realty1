@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { Search, MapPin, Bed, Bath, Square, Heart, Filter, Phone, Mail, Calendar, ArrowLeft, Star, Camera } from 'lucide-react';
+import { Search, MapPin, Bed, Bath, Square, Heart, Filter, Phone, Mail, Calendar, ArrowLeft, Star, Camera, MessageCircle } from 'lucide-react';
 import { supabase } from '../../lib/supabaseClient';
 
 const RealEstatePlatform = () => {
@@ -93,6 +93,15 @@ const RealEstatePlatform = () => {
         setSearchQuery('');
         setFilters({type: 'all', status: 'all', minPrice: '', maxPrice: '', bedrooms: 'all'});
     }, []);
+
+    const handleWhatsAppClick = (agentName, agentPhone, propertyTitle, propertyLocation) => {
+        const message = `Hi ${agentName}! I'm interested in the property: ${propertyTitle} at ${propertyLocation}. Could you provide more details?`;
+        const encodedMessage = encodeURIComponent(message);
+        const whatsappUrl = `https://wa.me/${agentPhone}?text=${encodedMessage}`;
+        
+        // Open WhatsApp
+        window.open(whatsappUrl, '_blank');
+  };
 
     useEffect(() => {
         let user = localStorage.getItem('user');
@@ -300,13 +309,13 @@ const RealEstatePlatform = () => {
               </div>
               
               <div className="flex space-x-3 mt-4">
-                <button className="flex-1 bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition-colors">
-                  <Phone size={16} className="inline mr-2" />
+                <a href={`tel:${property.agent.phone}`} className="flex-1 flex justify-center bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition-colors">
+                  <Phone size={16} className="inline mr-2 my-auto" />
                   Call Now
-                </button>
-                <button className="flex-1 bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700 transition-colors">
-                  <Calendar size={16} className="inline mr-2" />
-                  Schedule Tour
+                </a>
+                <button className="flex-1 bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700 transition-colors" onClick={()=> handleWhatsAppClick(property.agent.name, property.agent.phone, property.title, property.location)}>
+                  <MessageCircle size={16} className="inline mr-2 my-auto" />
+                  WhatsApp
                 </button>
               </div>
             </div>

@@ -8,6 +8,8 @@ import { supabase } from '@/lib/supabaseClient';
 export default function MyListingsPage() {
     const [listings, setListings] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [itemToDelete, setItemToDelete] = useState(null);
+    const [confirmDelete, setConfirmDelete] = useState(false);
 
     // Memoize format price function
     const formatPrice = useCallback((price) => {
@@ -18,11 +20,11 @@ export default function MyListingsPage() {
         }).format(price);
     }, []);
 
-    const deleteListing = async (listingId) => {
+    const deleteListing = async () => {
         const { error } = await supabase
             .from("listings")
             .delete()
-            .eq("id", listingId);
+            .eq("id", itemToDelete);
 
         if (error) {
             console.error("Error deleting listing:", error.message);
@@ -72,9 +74,35 @@ export default function MyListingsPage() {
 
     return (
         <div>
+            {
+                confirmDelete &&
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/25">
+                    <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md border-t-4 border-red-600">
+                        <h2 className="text-xl font-semibold text-red-600 mb-2">Are you sure you want to delete this listing?</h2>
+                        <p className="text-gray-700 mb-1">This action cannot be undone.</p>
+                        <p className="text-gray-700 mb-4">Click "Confirm" to proceed or "Cancel" to go back.</p>
+
+                        <div className="flex justify-end gap-4">
+                        <button
+                            onClick={() => setConfirmDelete(false)}
+                            className="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded"
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            onClick={deleteListing}
+                            className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded"
+                        >
+                            Confirm
+                        </button>
+                        </div>
+                    </div>
+                </div>
+            }
+
             <h1 className='text-blue-800 font-bold text-2xl px-3'>My Listings</h1>
             {listings.length === 0 ? (
-                <p>No listings found.</p>
+                <p className='m-auto'>No listings found.</p>
             ) : (
                 <ul className='flex flex-wrap gap-2 m-auto p-4'>
                     {listings.map((listing) => (
@@ -88,7 +116,8 @@ export default function MyListingsPage() {
                                 <button
                                 onClick={(e) => {
                                     e.stopPropagation();
-                                    deleteListing(listing.id);
+                                    setItemToDelete(listing.id);
+                                    setConfirmDelete(true);
                                 }}
                                 className={`absolute top-2 right-2 p-2 rounded-full bg-red-500 text-white hover:scale-110 transition-transform`}
                                 >

@@ -118,7 +118,6 @@ export default function UploadPage() {
         <input name="bathrooms" placeholder="Bathrooms" onChange={handleChange} className="border border-gray-300 hover:border-blue-300 p-2 rounded input" />
         <input name="area" placeholder="Area (sqft)" onChange={handleChange} className="border border-gray-300 hover:border-blue-300 p-2 rounded input" />
         <input name="type" placeholder="Type" onChange={handleChange} className="border border-gray-300 hover:border-blue-300 p-2 rounded input" />
-        <input name="status" placeholder="Status" onChange={handleChange} className="border border-gray-300 hover:border-blue-300 p-2 rounded input" />
         <select
         name="status"
         onChange={handleChange}
