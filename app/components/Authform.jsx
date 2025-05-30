@@ -26,7 +26,17 @@ export default function AuthForm() {
     } else {
       localStorage.setItem('user', JSON.stringify(result.data.user))
       setMessage('Success! Check your inbox if needed.')
-      redirect('/confirmation')
+      if (isLogin) {
+        // Redirect to dashboard or home page after login
+        redirect('/dashboard')
+      }
+      else {
+        // Redirect to confirmation page after sign up
+        setError(false)
+        setErrorMessage('')
+        redirect('/confirmation')
+        // You can redirect to a confirmation page or show a success message
+      }
     }
   }
 
@@ -68,7 +78,7 @@ export default function AuthForm() {
           onChange={(e) => setPassword(e.target.value)}
           required
         />
-        <button className="w-full bg-blue-700 text-white p-2 rounded hover:bg-blue-800 transition">
+        <button className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-800 transition">
           {isLogin ? 'Login' : 'Sign Up'}
         </button>
         <p
