@@ -25,6 +25,7 @@ const PropertyDetails = () => {
 
   useEffect(() => {
     const storedProperty = localStorage.getItem('selectedProperty');
+    console.log('Stored Property:', storedProperty);
     if (storedProperty) {
       setProperty(JSON.parse(storedProperty));
     } else {
@@ -39,7 +40,7 @@ const PropertyDetails = () => {
         <div className="container mx-auto px-4 py-6">
           {/* Back button */}
           <button
-            onClick={() => redirect('/dashboard')}
+            onClick={() => router.push('/dashboard')}
             className="flex items-center text-blue-600 hover:text-blue-800 mb-6"
           >
             <ArrowLeft size={20} className="mr-2" />

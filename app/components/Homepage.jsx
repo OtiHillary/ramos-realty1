@@ -76,13 +76,13 @@ const HomePage = ({ loggedIn, properties, searchQuery, filters, handleSearchChan
                 value={filters.type}
                 onChange={(e) => handleFilterChange('type', e.target.value)}
                 >
-                <option value="all">All Types</option>
-                <option value="apartment">Apartment</option>
-                <option value="house">House</option>
-                <option value="villa">Villa</option>
-                <option value="penthouse">Penthouse</option>
-                <option value="studio">Studio</option>
-                <option value="commercial">Commercial</option>
+                    <option value="all">All Types</option>
+                    <option value="apartment">Apartment</option>
+                    <option value="house">House</option>
+                    <option value="villa">Villa</option>
+                    <option value="penthouse">Penthouse</option>
+                    <option value="studio">Studio</option>
+                    <option value="commercial">Commercial</option>
                 </select>
 
                 <select
@@ -176,7 +176,7 @@ const HomePage = ({ loggedIn, properties, searchQuery, filters, handleSearchChan
             )}
             </div>
         </section>
-        
+
         <footer className="bg-gray-800 text-white py-12">
             <div className="container mx-auto px-4">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-8">

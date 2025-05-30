@@ -147,6 +147,17 @@ export default function EditListing() {
             <option value="For Rent">For Rent</option>
         </select>
 
+        <select name="type" value={ form.type || '' } placeholder="Type" onChange={handleChange} className="border border-gray-300 hover:border-blue-300 p-2 rounded input" >
+          <option value="">Select Type</option>
+          <option value="house">House</option>
+          <option value="apartment">Apartment</option>
+          <option value="commercial">Commercial</option>
+          <option value="villa">Villa</option>
+          <option value="studio">Studio</option>
+          <option value="penthouse">Penthouse</option>
+          <option value="commercial">Commercial</option>
+        </select>
+
       {/* Add similar inputs for other fields */}
       <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded">
         Save Changes

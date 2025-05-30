@@ -117,15 +117,24 @@ export default function UploadPage() {
         <input name="bedrooms" placeholder="Bedrooms" onChange={handleChange} className="border border-gray-300 hover:border-blue-300 p-2 rounded input" />
         <input name="bathrooms" placeholder="Bathrooms" onChange={handleChange} className="border border-gray-300 hover:border-blue-300 p-2 rounded input" />
         <input name="area" placeholder="Area (sqft)" onChange={handleChange} className="border border-gray-300 hover:border-blue-300 p-2 rounded input" />
-        <input name="type" placeholder="Type" onChange={handleChange} className="border border-gray-300 hover:border-blue-300 p-2 rounded input" />
+        <select name="type" placeholder="Type" onChange={handleChange} className="border border-gray-300 hover:border-blue-300 p-2 rounded input" >
+            <option value="">Select Type</option>
+            <option value="house">House</option>
+            <option value="apartment">Apartment</option>
+            <option value="commercial">Commercial</option>
+            <option value="villa">Villa</option>
+            <option value="studio">Studio</option>
+            <option value="penthouse">Penthouse</option>
+            <option value="commercial">Commercial</option>
+        </select>
         <select
         name="status"
         onChange={handleChange}
         className="border border-gray-300 hover:border-blue-300 p-2 rounded input"
         >
             <option value="">Select Status</option>
-            <option value="For Sale">For Sale</option>
-            <option value="For Rent">For Rent</option>
+            <option value="sale">For Sale</option>
+            <option value="rent">For Rent</option>
         </select>
 
         <input name="yearBuilt" placeholder="Year Built" onChange={handleChange} className="border border-gray-300 hover:border-blue-300 p-2 rounded input" />

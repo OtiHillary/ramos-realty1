@@ -30,12 +30,14 @@ export default function MyListingsPage() {
             console.error("Error deleting listing:", error.message);
             throw error;
         }
-        console.log("Listing deleted successfully:", listingId);
+        console.log("Listing deleted successfully:", itemToDelete);
         // Remove the deleted listing from the state
         setListings((prevListings) => 
-            prevListings.filter((listing) => listing.id !== listingId)
+            prevListings.filter((listing) => listing.id !== itemToDelete)
         );
         // Optionally, you can show a success message or update the UI
+        setConfirmDelete(false);
+        setItemToDelete(null);
         alert("Listing deleted successfully");
         return true;
     };

@@ -8,7 +8,6 @@ import HomePage from '../components/Homepage';
 const RealEstatePlatform = () => {
     const [properties, setProperties] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
-    const [selectedProperty, setSelectedProperty] = useState(null);
     const [user, setUser] = useState(null);
     const [loggedIn, setLoggedIn] = useState(false);
     const [filters, setFilters] = useState({
@@ -26,6 +25,7 @@ const RealEstatePlatform = () => {
 
     // Memoize filter handlers
     const handleFilterChange = useCallback((filterKey, value) => {
+        console.log(`Filter changed: ${filterKey} = ${value}`);
         setFilters(prev => ({...prev, [filterKey]: value}));
     }, []);
 
