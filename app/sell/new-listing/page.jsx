@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { useRouter } from 'next/navigation';
 import { v4 as uuidv4 } from 'uuid';
+import { ArrowRight, FileImageIcon } from 'lucide-react';
 
 export default function UploadPage() {
   const [form, setForm] = useState({
@@ -38,7 +39,7 @@ export default function UploadPage() {
   };
 
   const uploadImages = async () => {
-    if (!imageFiles) return [];
+    if (!imageFiles || imageFiles.length === 0) return [];
 
     const uploadedURLs = [];
 
@@ -46,20 +47,30 @@ export default function UploadPage() {
       const file = imageFiles[i];
       const filePath = `property-images/${uuidv4()}-${file.name}`;
 
-      const { data, error } = await supabase.storage
-        .from('listing-storage')
-        .upload(filePath, file);
+      try {
+        const { data, error } = await supabase.storage
+          .from('listing-storage')
+          .upload(filePath, file);
 
-      if (error) {
-        console.error('Image upload error:', error);
+        if (error) {
+          console.error(`Failed to upload image ${file.name}:`, error.message);
+          continue; // Skip this file and move on
+        }
+
+        const { data: publicUrlData, error: urlError } = supabase.storage
+          .from('listing-storage')
+          .getPublicUrl(filePath);
+
+        if (urlError || !publicUrlData?.publicUrl) {
+          console.error(`Failed to retrieve public URL for ${file.name}:`, urlError?.message);
+          continue;
+        }
+
+        uploadedURLs.push(publicUrlData.publicUrl);
+      } catch (err) {
+        console.error(`Unexpected error uploading ${file.name}:`, err.message);
         continue;
       }
-
-      const { data: publicUrlData } = supabase.storage
-        .from('listing-storage')
-        .getPublicUrl(filePath);
-
-      uploadedURLs.push(publicUrlData.publicUrl);
     }
 
     return uploadedURLs;
@@ -69,42 +80,48 @@ export default function UploadPage() {
     e.preventDefault();
     setLoading(true);
 
-    const imageUrls = await uploadImages();
+    try {
+      const imageUrls = await uploadImages();
 
-    const newProperty = {
-      title: form.title,
-      price: parseInt(form.price),
-      location: form.location,
-      bedrooms: parseInt(form.bedrooms),
-      bathrooms: parseInt(form.bathrooms),
-      area: parseInt(form.area),
-      type: form.type,
-      status: form.status,
-      image: imageUrls[0] || '',
-      description: form.description,
-      yearbuilt: parseInt(form.yearBuilt),
-      agent: {
-        name: form.agent_name,
-        phone: form.agent_phone,
-        email: form.agent_email,
-        rating: parseFloat(form.agent_rating)
-      },
-      features: form.features.split(',').map((f) => f.trim()),
-      images: imageUrls
-    };
+      const newProperty = {
+        title: form.title,
+        price: parseInt(form.price),
+        location: form.location,
+        bedrooms: parseInt(form.bedrooms),
+        bathrooms: parseInt(form.bathrooms),
+        area: parseInt(form.area),
+        type: form.type,
+        status: form.status,
+        image: imageUrls[0] || '',
+        description: form.description,
+        yearbuilt: parseInt(form.yearBuilt),
+        agent: {
+          name: form.agent_name,
+          phone: form.agent_phone,
+          email: form.agent_email,
+          rating: parseFloat(form.agent_rating)
+        },
+        features: form.features.split(',').map((f) => f.trim()),
+        images: imageUrls
+      };
 
-    const { error } = await supabase.from('listings').insert([newProperty]);
+      const { error } = await supabase.from('listings').insert([newProperty]);
 
-    if (error) {
-      console.log('Upload failed: ' + error.message);
-      alert('Upload failed: ' + error.message);
-    } else {
-      console.log('Listing uploaded!');
-      alert('Listing uploaded!');
-      router.push('/dashboard');
+      if (error) {
+        console.error('Listing insert error:', error.message);
+        alert('Upload failed: ' + error.message);
+      } else {
+        console.log('Listing uploaded successfully!');
+        alert('Listing uploaded!');
+        router.push('/dashboard');
+      }
+
+    } catch (err) {
+      console.error('Unexpected error during listing upload:', err.message);
+      alert('An unexpected error occurred. Please try again later.');
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   return (
@@ -139,9 +156,17 @@ export default function UploadPage() {
 
         <input name="yearBuilt" placeholder="Year Built" onChange={handleChange} className="border border-gray-300 hover:border-blue-300 p-2 rounded input" />
         <textarea name="description" placeholder="Description" onChange={handleChange} className="input col-span-2" />
-        <input type="file" accept="image/*" multiple onChange={handleFileChange} className="col-span-2" />
+
+        <label htmlFor="file" className="col-span-2 flex flex-col justify-center p-2 items-center bg-blue-600 border border-gray-300 hover:border-blue-300 rounded cursor-pointer">
+          <span className="text-white my-auto">
+          <FileImageIcon className="inline mr-2 my-auto" size={20} />
+          Upload Images
+          </span>
+          <input id='file' type="file" accept="image/*" multiple onChange={handleFileChange} className="sr-only col-span-2" />
+        </label>
 
         <hr className="col-span-2 my-4" />
+
         <input name="agent_name" placeholder="Agent Name" onChange={handleChange} className="border border-gray-300 hover:border-blue-300 p-2 rounded input" />
         <input name="agent_phone" placeholder="Agent Phone" onChange={handleChange} className="border border-gray-300 hover:border-blue-300 p-2 rounded input" />
         <input name="agent_email" placeholder="Agent Email" onChange={handleChange} className="border border-gray-300 hover:border-blue-300 p-2 rounded input" />
@@ -151,6 +176,7 @@ export default function UploadPage() {
 
         <button type="submit" className="col-span-2 mt-4 bg-blue-600 text-white py-2 rounded hover:bg-blue-700" disabled={loading}>
           {loading ? 'Uploading...' : 'Submit Listing'}
+          <ArrowRight className="inline ml-2" size={20} />
         </button>
       </form>
     </div>

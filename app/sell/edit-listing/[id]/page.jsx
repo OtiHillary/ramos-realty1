@@ -14,16 +14,22 @@ export default function EditListing() {
 
   useEffect(() => {
     const fetchListing = async () => {
-      const { data, error } = await supabase
-        .from('listings')
-        .select('*')
-        .eq('id', id)
-        .single();
-      if (error) console.error(error);
-      else {
-        setListing(data);
-        setForm(data);
+      try { 
+        const { data, error } = await supabase
+          .from('listings')
+          .select('*')
+          .eq('id', id)
+          .single();
+        if (error) console.error(error);
+        else {
+          setListing(data);
+          setForm(data);
+        }        
+      } catch (error) {
+        console.error('Error fetching listing:', error);
+        setError(true);
       }
+
     };
     fetchListing();
   }, [id]);
@@ -143,8 +149,8 @@ export default function EditListing() {
         className="border border-gray-300 hover:border-blue-300 p-2 m-1 rounded input"
         >
             <option value="">Select Status</option>
-            <option value="For Sale">For Sale</option>
-            <option value="For Rent">For Rent</option>
+            <option value="sale">For Sale</option>
+            <option value="rent">For Rent</option>
         </select>
 
         <select name="type" value={ form.type || '' } placeholder="Type" onChange={handleChange} className="border border-gray-300 hover:border-blue-300 p-2 rounded input" >

@@ -29,11 +29,11 @@ const PropertyDetails = () => {
     if (storedProperty) {
       setProperty(JSON.parse(storedProperty));
     } else {
-      router.push('/dashboard'); // redirect client-side
+      router.push('/dashboard'); 
     }
   }, [router]);
 
-  if (!property) return null; // Avoid rendering until property is set
+  if (!property) return null; 
 
     return (
       <div className="bg-white min-h-screen">

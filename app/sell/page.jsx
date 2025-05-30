@@ -21,56 +21,87 @@ export default function MyListingsPage() {
     }, []);
 
     const deleteListing = async () => {
-        const { error } = await supabase
-            .from("listings")
-            .delete()
-            .eq("id", itemToDelete);
+        try {
+            const { error } = await supabase
+                .from("listings")
+                .delete()
+                .eq("id", itemToDelete);
 
-        if (error) {
-            console.error("Error deleting listing:", error.message);
-            throw error;
+            if (error) {
+                console.error("Error deleting listing:", error.message);
+                throw error;
+            }
+            console.log("Listing deleted successfully:", itemToDelete);
+            // Remove the deleted listing from the state
+            setListings((prevListings) => 
+                prevListings.filter((listing) => listing.id !== itemToDelete)
+            );
+            // Optionally, you can show a success message or update the UI
+            setConfirmDelete(false);
+            setItemToDelete(null);
+            alert("Listing deleted successfully");
+            return true;            
+        } catch (error) {
+            console.error("Error deleting listing:", error);
+            alert("Failed to delete listing. Please try again.");
+            return false;
         }
-        console.log("Listing deleted successfully:", itemToDelete);
-        // Remove the deleted listing from the state
-        setListings((prevListings) => 
-            prevListings.filter((listing) => listing.id !== itemToDelete)
-        );
-        // Optionally, you can show a success message or update the UI
-        setConfirmDelete(false);
-        setItemToDelete(null);
-        alert("Listing deleted successfully");
-        return true;
+
     };
 
     useEffect(() => {
         const fetchListings = async () => {
+            try {
             setLoading(true);
-            const user = localStorage.getItem('user');
-            const email = user ? JSON.parse(user).email : null;
-            console.log(email)
 
-            if (!user) {
+            const storedUser = localStorage.getItem('user');
+
+            if (!storedUser) {
+                console.warn('No user found in localStorage');
                 setListings([]);
-                setLoading(false);
                 return;
             }
 
-            // Query listings where agent.email matches the stored email
+            let parsedUser;
+            
+            try {
+                parsedUser = JSON.parse(storedUser);
+            } catch (jsonErr) {
+                console.error('Failed to parse user JSON:', jsonErr);
+                setListings([]);
+                return;
+            }
+
+            const email = parsedUser.email;
+            if (!email) {
+                console.warn('User has no email field');
+                setListings([]);
+                return;
+            }
+
             const { data, error } = await supabase
                 .from('listings')
                 .select('*')
                 .contains('agent', { email });
 
             if (error) {
+                console.error('Supabase fetch error:', error);
                 setListings([]);
             } else {
                 setListings(data);
             }
+
+            } catch (err) {
+            console.error('Unexpected error fetching listings:', err);
+            setListings([]);
+            } finally {
             setLoading(false);
+            }
         };
 
         fetchListings();
     }, []);
+
 
     if (loading) return <div>Loading...</div>;
 

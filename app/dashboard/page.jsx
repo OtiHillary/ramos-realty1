@@ -8,6 +8,8 @@ import HomePage from '../components/Homepage';
 const RealEstatePlatform = () => {
     const [properties, setProperties] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
+    const [error, setError] = useState(false)
+    const [errorMessage, setErrorMessage] = useState('')
     const [user, setUser] = useState(null);
     const [loggedIn, setLoggedIn] = useState(false);
     const [filters, setFilters] = useState({
@@ -36,27 +38,47 @@ const RealEstatePlatform = () => {
 
 
     useEffect(() => {
-        let user = localStorage.getItem('user');
-        if (!user) {
-            // Redirect to login page if user is not authenticated
+        try {
+            const user = localStorage.getItem('user');
+
+            if (!user) {
             setLoggedIn(false);
             setUser(null);
             window.location.href = '/';
+            return;
+            }
+
+            setLoggedIn(true);
+            setUser(JSON.parse(user));
+        } catch (err) {
+            console.log('Error accessing localStorage:', err);
+            setLoggedIn(false);
+            setUser(null);
+            return;
         }
-        setLoggedIn(true);
-        setUser(JSON.parse(user));
+
         const fetchProperties = async () => {
+            try {
             const { data, error } = await supabase.from('listings').select('*');
 
             if (error) {
-                console.error('Error fetching properties:', error);
-            } else {
+                setError(true)
+                setErrorMessage('Server error; Likely a network problem')
+                console.log('Supabase error:', error.message);
+                return;
+            }
+
             setProperties(data);
+            } catch (err) {
+                setError(true)
+                setErrorMessage('Network or unexpected error while fetching properties:', err.message)
+                console.log('Network or unexpected error while fetching properties:', err.message);
             }
         };
 
         fetchProperties();
-    }, []);
+        }, []);
+
 
 
   function handleLogout() {
@@ -72,6 +94,23 @@ const RealEstatePlatform = () => {
 
 return (
     <div className="font-sans">
+                {
+                error &&
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/25">
+                    <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md border-t-4 border-red-600">
+                        <h2 className="text-xl font-semibold text-red-600 mb-2">{ errorMessage }</h2>
+
+                        <div className="flex justify-end gap-4">
+                        <button
+                            onClick={()=> setError(false)}
+                            className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded"
+                        >
+                            Ok
+                        </button>
+                        </div>
+                    </div>
+                </div>
+            }
         <HomePage
             properties={properties}
             searchQuery={searchQuery}
