@@ -1,11 +1,16 @@
 'use client';
 import React from 'react'
-import { Search, MapPin, Bed, Bath, Square, Heart, Filter } from 'lucide-react';
+import { Search, Menu, Filter, X } from 'lucide-react';
 import { useMemo } from 'react';
 import PropertyCard from './Property';
 
 const HomePage = ({ loggedIn, properties, searchQuery, filters, handleSearchChange, handleFilterChange, clearAllFilters, handleLogout }) =>{
     const [favoriteIds, setFavoriteIds] = React.useState([]);
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
+
+    const toggleMobileMenu = () => {
+        setIsMobileMenuOpen(!isMobileMenuOpen);
+    };
 
     // Filter properties based on search query and filters
     const filteredProperties = useMemo(() => {
@@ -27,17 +32,37 @@ const HomePage = ({ loggedIn, properties, searchQuery, filters, handleSearchChan
         {/* Header */}
         <header className="bg-white shadow-sm">
             <div className="container mx-auto px-4 py-4">
-            <div className="flex items-center justify-between">
-                <h1 className="text-2xl font-bold text-blue-600">RamosRealty</h1>
-                <nav className="hidden md:flex space-x-6">
-                <a href="/dashboard" className="text-gray-600 hover:text-blue-600">Home</a>
-                <a href="/sell" className="text-gray-600 hover:text-blue-600">Sell</a>
-                    {
-                        loggedIn? <a onClick= { handleLogout } className="text-gray-600 hover:text-blue-600 cursor-pointer">Logout</a>
-                        : <a href='/' className="text-gray-600 hover:text-blue-600 cursor-pointer">Login</a>
-                    }
-                </nav>
-            </div>
+                <div className="flex items-center justify-between">
+                    <h1 className="text-2xl font-bold text-blue-600">RamosRealty</h1>
+                    {/* Desktop Nav */}
+                    <nav className="hidden md:flex space-x-6">
+                        <a href="/dashboard" className="text-gray-600 hover:text-blue-600">Home</a>
+                        <a href="/sell" className="text-gray-600 hover:text-blue-600">Sell</a>
+                        {
+                        loggedIn
+                            ? <span onClick={handleLogout} className="text-gray-600 hover:text-blue-600 cursor-pointer">Logout</span>
+                            : <a href="/" className="text-gray-600 hover:text-blue-600 cursor-pointer">Login</a>
+                        }
+                    </nav>
+
+                    {/* Hamburger Icon */}
+                    <button className="md:hidden text-gray-700 z-100" onClick={toggleMobileMenu}>
+                        {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+                    </button>
+
+                    {/* Mobile Menu */}
+                    {isMobileMenuOpen && (
+                        <div className="absolute top-0 right-0 w-full bg-white shadow-md flex flex-col items-start px-4 py-4 space-y-3 md:hidden z-50">
+                        <a href="/dashboard" className="text-gray-600 hover:text-blue-600">Home</a>
+                        <a href="/sell" className="text-gray-600 hover:text-blue-600">Sell</a>
+                        {
+                            loggedIn
+                            ? <span onClick={handleLogout} className="text-gray-600 hover:text-blue-600 cursor-pointer">Logout</span>
+                            : <a href="/" className="text-gray-600 hover:text-blue-600 cursor-pointer">Login</a>
+                        }
+                        </div>
+                    )}
+                </div>
             </div>
         </header>
 
