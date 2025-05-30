@@ -176,11 +176,12 @@ const HomePage = ({ loggedIn, properties, searchQuery, filters, handleSearchChan
             )}
             </div>
         </section>
+        
         <footer className="bg-gray-800 text-white py-12">
             <div className="container mx-auto px-4">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
                 <div>
-                <h4 className="text-xl font-bold mb-4">EstateHub</h4>
+                <h4 className="text-xl font-bold mb-4">Ramos Realty</h4>
                 <p className="text-gray-400">Your trusted partner in finding the perfect property.</p>
                 </div>
                 <div>
