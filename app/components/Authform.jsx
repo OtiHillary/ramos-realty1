@@ -26,7 +26,7 @@ export default function AuthForm() {
     } else {
       localStorage.setItem('user', JSON.stringify(result.data.user))
       setMessage('Success! Check your inbox if needed.')
-      redirect('/dashboard')
+      redirect('/confirmation')
     }
   }
 
