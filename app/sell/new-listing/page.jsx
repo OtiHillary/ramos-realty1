@@ -7,6 +7,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { ArrowRight, FileImageIcon } from 'lucide-react';
 
 export default function UploadPage() {
+  const [fileCount, setFileCount] = useState(0);
   const [form, setForm] = useState({
     title: '',
     price: '',
@@ -31,11 +32,14 @@ export default function UploadPage() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleFileChange = (e) => {
-    setImageFiles(e.target.files);
+    const files = e.target.files;
+    setImageFiles(files);
+    setFileCount(files.length);
   };
 
   const uploadImages = async () => {
@@ -129,7 +133,7 @@ export default function UploadPage() {
       <h1 className="text-2xl font-bold text-blue-600 mb-6">Upload Property</h1>
       <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-4">
         <input name="title" placeholder="Title" onChange={handleChange} className="border border-gray-300 hover:border-blue-300 p-2 rounded input" required />
-        <input name="price" placeholder="Price" onChange={handleChange} className="border border-gray-300 hover:border-blue-300 p-2 rounded input" required />
+        <input name="price" placeholder="Price(NGN)" onChange={handleChange} className="border border-gray-300 hover:border-blue-300 p-2 rounded input" required />
         <input name="location" placeholder="Location" onChange={handleChange} className="border border-gray-300 hover:border-blue-300 p-2 rounded input" required />
         <input name="bedrooms" placeholder="Bedrooms" onChange={handleChange} className="border border-gray-300 hover:border-blue-300 p-2 rounded input" />
         <input name="bathrooms" placeholder="Bathrooms" onChange={handleChange} className="border border-gray-300 hover:border-blue-300 p-2 rounded input" />
@@ -163,7 +167,11 @@ export default function UploadPage() {
           Upload Images
           </span>
           <input id='file' type="file" accept="image/*" multiple onChange={handleFileChange} className="sr-only col-span-2" />
+
         </label>
+          {fileCount > 0 && (
+            <span className="text-gray-600 text-sm mt-2">{fileCount} file{fileCount > 1 ? "s" : ""} selected</span>
+          )}
 
         <hr className="col-span-2 my-4" />
 
